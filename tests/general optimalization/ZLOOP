@@ -1,0 +1,76 @@
+
+REPORT ZLOOP.
+***********
+*   Program compare runtime and usage memory of:
+*      loop into data  VS loop assigning field
+*
+*   Result:
+*      select column is much better in both ways
+*
+***********
+
+
+
+
+data datatable type table of sbook.
+data l_count type int4.
+data n type int4 value 1.
+
+*********
+* SELECT working data
+*********
+SELECT * into table datatable from SBOOK.
+
+
+*********
+* LOOP into data
+*********
+write:/ 'LOOP into data'.
+
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = data(sizebefore).
+GET RUN TIME FIELD data(tb).
+
+data nrow like line of datatable.
+do n times.
+  loop at datatable into data(row).
+    row-connid = 1.
+  endloop.
+enddo.
+
+GET RUN TIME FIELD data(ta).
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = data(sizeafter).
+DATA(tm) = CONV decfloat34( ta - tb ).
+data(mem) = sizeafter - sizebefore.
+write: / | time is: { tm } micS |.
+write: / | mem is: { mem } kB |.
+
+
+
+*********
+* LOOP assigninigh
+*********
+write:/ 'LOOP asigning data'.
+
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = sizebefore.
+GET RUN TIME FIELD tb.
+
+do n times.
+  loop at datatable assigning field-symbol(<row>).
+    <row>-connid = 1.
+  endloop.
+enddo.
+
+GET RUN TIME FIELD ta.
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = sizeafter.
+tm = CONV decfloat34( ta - tb ).
+mem = sizeafter - sizebefore.
+write: / | time is: { tm } micS |.
+write: / | mem is: { mem } kB |.

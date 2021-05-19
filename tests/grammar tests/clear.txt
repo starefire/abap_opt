@@ -1,0 +1,2 @@
+clear pom.
+clear: pom1,pom2,pom3.

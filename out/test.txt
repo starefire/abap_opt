@@ -1,0 +1,19 @@
+*#optimalization
+*#optimize select
+*#endoptimalization
+
+
+
+
+select * from sbook into table @data(dt1).
+select * from sbook into table @data(dt2).
+              data cnt type int4.
+      data lrow like sbook-connid.
+      loop at dt1 into data(fs1).
+        lrow = fs1-connid.
+        loop at dt2 into data(lr1).
+          if lrow = lr1-connid.
+            cnt = cnt + 1.
+          endif.
+        endloop.
+      endloop.

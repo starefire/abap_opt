@@ -1,0 +1,15 @@
+LOOP AT itab INTO DATA(number1).
+  ...
+ENDLOOP.
+
+LOOP AT itab INTO number1.
+  ...
+ENDLOOP.
+
+LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs>).
+  ...
+ENDLOOP.
+
+LOOP AT itab ASSIGNING <fs>.
+  ...
+ENDLOOP.

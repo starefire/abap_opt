@@ -1,0 +1,74 @@
+
+REPORT ZSELECT_STAR.
+***********
+*   Program compare runtime and usage memory of:
+*      select * vs select specific column
+*
+*   Result:
+*      select column is much better in both ways
+*
+***********
+
+tables: sbook.
+
+data l_count type int4.
+
+TYPES: BEGIN OF wa,
+         planetype   TYPE sflight-planetype,
+         carrid TYPE sflight-carrid,
+         connid   TYPE sflight-connid,
+      END OF wa.
+DATA  itab TYPE standard table of wa.
+data datatable type table of sbook.
+types: begin of ityp,
+    carrid type S_CARR_ID,
+    bookid type S_BOOK_ID,
+    fldate type S_DATE,
+    connid type S_CONN_ID,
+    smoker type s_smoker,
+ end of ityp.
+ data dttabcol type table of ityp.
+data n type int4 value 1.
+
+field-symbols <row> type wa.
+
+
+
+GET RUN TIME FIELD data(tb).
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = data(sizebefore).
+SELECT *
+       FROM sbook AS s
+       INTO table datatable.
+
+GET RUN TIME FIELD data(ta).
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = data(sizeafter).
+data(tm) = CONV decfloat34( ta - tb ).
+data(mem) = sizeafter - sizebefore.
+write: / | select * |.
+write: / | time is: { tm } micS |.
+write: / | mem is: { mem } kB |.
+
+*********
+* SELECT one column
+*********
+clear: datatable, sizeafter, sizebefore.
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = sizebefore.
+GET RUN TIME FIELD tb.
+SELECT carrid, connid
+       FROM sbook AS s
+       INTO table @data(ssitab).
+GET RUN TIME FIELD ta.
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = sizeafter.
+data(tm2) = CONV decfloat34( ta - tb ).
+data(mem2) = sizeafter - sizebefore.
+write: / | select cols |.
+write: / | time is: { tm2 } micS |.
+write: / | mem is: { mem2 } kB |.

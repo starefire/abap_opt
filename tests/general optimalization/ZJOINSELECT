@@ -1,0 +1,80 @@
+
+REPORT ZJOINNSELECT.
+***********
+*   Program compare runtime and usage memory of:
+*      join VS select and select in loop
+*
+*   Result:
+*      result of testing
+*
+***********
+
+
+data datatable type table of sbook.
+data l_count type int4.
+
+TYPES: BEGIN OF wa,
+         planetype   TYPE sflight-planetype,
+         carrid TYPE sflight-carrid,
+         connid   TYPE sflight-connid,
+      END OF wa.
+DATA  itab TYPE standard table of wa.
+data(max) = 500000.
+
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = data(sizebefore).
+GET RUN TIME FIELD data(tb).
+
+SELECT p~planetype s~carrid s~connid
+       FROM sbook AS s
+       LEFT OUTER JOIN sflight AS p ON s~carrid   =  p~carrid
+                                    AND p~connid = s~connid
+       INTO CORRESPONDING FIELDS OF TABLE itab
+  up to max rows.
+
+GET RUN TIME FIELD data(ta).
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = data(sizeafter).
+DATA(tm) = CONV decfloat34( ta - tb ).
+data(mem) = sizeafter - sizebefore.
+write: / | time is: { tm } micS |.
+write: / | mem is: { mem } kB |.
+
+
+clear itab.
+
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = sizebefore.
+GET RUN TIME FIELD tb.
+
+SELECT carrid connid
+       FROM sbook AS s
+       INTO CORRESPONDING FIELDS OF TABLE itab
+  up to max rows.
+
+field-symbols <row> type wa.
+
+loop at itab assigning <row>.
+
+     if  ( sy-tabix mod 100 = 0 ).
+     select single planetype from sflight into <row>-planetype
+                                      where connid = <row>-connid
+                                        and carrid = <row>-carrid
+     .
+
+     ENDIF.
+
+endloop.
+
+
+GET RUN TIME FIELD ta.
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = sizeafter.
+tm = CONV decfloat34( ta - tb ).
+mem = sizeafter - sizebefore.
+write: / | time is: { tm } micS |.
+write: / | mem is: { mem } kB |.

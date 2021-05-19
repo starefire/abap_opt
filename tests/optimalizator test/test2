@@ -1,0 +1,46 @@
+
+
+*#optimalization
+*#optimize select
+*#optimize prefix l_
+*#endoptimalization
+
+
+
+data err(20) type c value '426'.
+data ch3(3) type c.
+data val type S_CARR_ID.
+data carrid like sbook-carrid.
+data connid like sbook-connid.
+select single carrid from sbook into val.
+
+select  * from sbook into table @data(l_row) up to 500000 rows.
+select  * from sbook into table @data(srow) up to 500000 rows.
+
+READ TABLE l_row WITH KEY
+       CARRID = carrid
+       CONNID = connid
+       FLDATE = sy-datum
+       BOOKID = ch3
+      into data(rrow).
+
+READ TABLE srow WITH KEY
+       CARRID = carrid
+       CONNID = connid
+       FLDATE = sy-datum
+       BOOKID = ch3
+      into data(s_row).
+
+data(stt) = 1.
+if     stt = 1.
+      val = 1.
+elseif stt = 2.
+      val = s_row-carrid.
+      err = s_row-passform.
+elseif stt = 3.
+      val = rrow-carrid.
+      err = rrow-passform.
+else.
+      val = 0.
+      err = 'Undefined'.
+endif.

@@ -1,0 +1,5 @@
+READ TABLE itab ASSIGNING FIELD-SYMBOL(<fs>).
+READ TABLE spfli_tab INTO DATA(spfli).
+
+READ TABLE itab ASSIGNING <fs>.
+READ TABLE spfli_tab INTO spfli.

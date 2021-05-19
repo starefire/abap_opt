@@ -1,0 +1,29 @@
+*#optimalization
+*#optimize readtable
+*#optimize select
+*#optimize prefix pr_
+*#endoptimalization
+
+DATA: ind(3)  type c.
+data datatable type table of sbook.
+
+data(cnt) = 0.
+
+SELECT * from spfli
+  into table @data(spfli).
+
+select * from sbook into table datatable.
+
+
+loop at spfli into data(row_sfpi).
+    READ TABLE datatable WITH KEY
+       CARRID = row_sfpi-carrid
+       CONNID = row_sfpi-connid
+       FLDATE = sy-datum
+       BOOKID = ind
+      into data(row).
+
+    if sy-subrc = 0.
+      cnt = cnt + 1.
+    endif.
+endloop.

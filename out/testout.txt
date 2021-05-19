@@ -1,0 +1,21 @@
+*#optimalization
+*#optimize select
+*#endoptimalization
+SELECT connid 
+FROM sbook
+ into  TABLE @DATA(dt1)
+.
+SELECT connid 
+FROM sbook
+ into  TABLE @DATA(dt2)
+.
+DATA: cnt  type int4.
+DATA: lrow  like sbook-connid.
+LOOP AT dt1 INTO DATA(fs1).
+lrow = fs1-connid.
+LOOP AT dt2 INTO DATA(lr1).
+IF ( lrow = lr1-connid ).
+cnt = cnt + 1.
+ENDIF.
+ENDLOOP.
+ENDLOOP.

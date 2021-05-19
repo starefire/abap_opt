@@ -1,0 +1,31 @@
+
+*#optimalization
+*#optimize select
+*#endoptimalization
+
+
+data ch3(3) type c.
+data err(20) type c.
+data datatable type table of sbook.
+types: begin of itype,
+  carrid type S_CARR_ID,
+  connid type S_CONN_ID,
+  smoke(1) type c,
+ end of itype.
+data itab type table of itype.
+select * from sbook into table datatable.
+
+select carrid, connid from spfli into table @itab.
+
+loop at itab assigning field-symbol(<fs>).
+  READ TABLE datatable WITH KEY
+       CARRID = <fs>-carrid
+       CONNID = <fs>-connid
+       FLDATE = sy-datum
+       BOOKID = ch3
+      into data(row).
+
+  if sy-subrc <> 4.
+    <fs>-smoke = 'X'.
+  endif.
+endloop.

@@ -1,0 +1,16 @@
+pom = value1.
+pom = 234.
+pom = '234'.
+pom = 3 + 5.
+pom = pom2 - pom3.
+pom = 234 - pom2.
+
+<pom> = value1.
+<pom> = 234.
+<pom> = '234'.
+<pom>-col1 = 3 + 5.
+<pom>-col1 = pom2 - pom3.
+<pom>-col1 = 234 - pom2.
+
+<pom> = <pom2>-col1.
+  

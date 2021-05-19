@@ -1,0 +1,29 @@
+DATA: text_buffer TYPE string VALUE 'sda',
+      pcount TYPE d VALUE 11,
+      price TYPE p LENGTH 88 DECIMALS 22 VALUE '1.99'.
+
+DATA: spfli_wa1 TYPE spfli,
+      spfli_wa2 LIKE spfli_wa1.
+
+DATA: oref  TYPE REF TO c1,
+      dref1 LIKE REF TO oref,
+      dref2 TYPE REF TO ist.
+
+DATA: spfli_tab TYPE HASHED TABLE OF spfli
+                WITH UNIQUE KEY carrid connid,
+      spfli_wa  LIKE LINE OF spfli_tab.
+
+DATA: spfli_wa TYPE spfli,
+      r_carrid TYPE RANGE OF spfli-carrid,
+      r_carrid_line LIKE LINE OF r_carrid.
+
+DATA       struc2 TYPE t100    BOXED.
+
+DATA: BEGIN OF spfli_struc,
+         indexx  TYPE ie,
+         spfli_wa TYPE spfli,
+      END OF spfli_struc.
+
+DATA: spfli_tab TYPE HASHED TABLE OF spfli
+                WITH UNIQUE KEY carrid connid,
+      spfli_wa  LIKE LINE OF spfli_tab.

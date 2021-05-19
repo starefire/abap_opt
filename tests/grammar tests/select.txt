@@ -1,0 +1,63 @@
+
+SELECT *
+  FROM ekko
+  INTO TABLE it_ekko.
+
+select *
+    from ekpo
+    into TABLE @DATA(it_ekko2).
+    
+SELECT bukrs belnr gjahr buzei mwskz umsks prctr hkont xauto koart
+       dmbtr mwart hwbas aufnr projk shkzg kokrs
+  FROM bseg
+  INTO TABLE it_bseg.
+
+SELECT bukrs belnr gjahr buzei mwskz umsks prctr hkont xauto koart
+       dmbtr mwart hwbas aufnr projk shkzg kokrs
+  FROM bseg
+  INTO CORRESPONDING FIELDS OF TABLE it_bseg.
+  
+SELECT bukrs belnr gjahr buzei mwskz umsks prctr hkont xauto koart
+       dmbtr mwart hwbas aufnr projk shkzg kokrs
+  FROM bseg
+  INTO wa_bseg.
+  APPEND wa_bseg TO it_bseg.
+ENDSELECT.
+
+SELECT bukrs belnr gjahr bldat monat budat xblnr awtyp awkey
+  UP TO 100 ROWS
+  FROM bkpf
+  INTO TABLE it_bkpf.
+  
+SELECT bukrs belnr gjahr buzei mwskz umsks prctr hkont xauto koart
+         dmbtr mwart hwbas aufnr projk shkzg kokrs
+    FROM bseg
+    INTO TABLE it_bseg
+    FOR ALL ENTRIES IN it_bkpf
+    WHERE bukrs EQ it_bkpf-bukrs AND
+          belnr EQ it_bkpf-belnr AND
+          gjahr EQ it_bkpf-gjahr.
+          
+SELECT * 
+    FROM bseg
+    INTO TABLE it_bseg
+    WHERE bukrs EQ wa_bseg-bukrs AND
+          belnr EQ wa_bseg-belnr AND
+          gjahr EQ wa_bseg-gjahr AND
+          buzei EQ wa_bseg-BUZEI.
+          
+SELECT * 
+    FROM bseg
+    UP TO 1 ROWS
+    INTO TABLE it_bseg
+    WHERE bukrs EQ wa_bseg-bukrs AND
+          belnr EQ wa_bseg-belnr.
+
+
+SELECT * 
+    FROM bseg
+    UP TO 1000 ROWS
+    INTO TABLE it_bseg
+    WHERE bukrs EQ wa_bseg-bukrs AND
+          belnr EQ wa_bseg-belnr.
+       

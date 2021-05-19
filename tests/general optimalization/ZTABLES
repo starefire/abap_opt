@@ -1,0 +1,113 @@
+
+REPORT ZTABLES.
+***********
+*   Program compare runtime and usage memory of:
+*      standart table VS sorted table VS hashed table
+*
+*   Result:
+*      result of testing
+*
+***********
+
+
+data datatable type table of sbook.
+data hashed like hashed table of sbook with unique key PRIMARY_KEY COMPONENTS CARRID CONNID FLDATE BOOKID.
+data sorted type sorted table of sbook with unique key primary_key components CARRID CONNID FLDATE BOOKID.
+data l_count type int4.
+
+GET RUN TIME FIELD data(tt).
+
+data: ta like tt,
+      tb like tt.
+
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = data(size).
+
+data: sizebefore like size,
+      sizeafter  like size.
+
+
+READ TABLE datatable WITH KEY
+  CARRID = 'AA'
+  CONNID = '17'
+  FLDATE = '13.11.2019'
+  BOOKID = '426'
+  into data(row).
+
+
+select * from sbook into table datatable.
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = sizebefore.
+
+
+GET RUN TIME FIELD tb.
+
+READ TABLE datatable WITH KEY
+  CARRID = 'AA'
+  CONNID = '17'
+  FLDATE = '13.11.2019'
+  BOOKID = '426'
+  into row.
+
+GET RUN TIME FIELD ta.
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = sizeafter.
+DATA(tm) = CONV decfloat34( ta - tb ).
+data(mem) = sizeafter - sizebefore.
+write: / 'standart table'.
+write: / | time is: { tm } micS |.
+write: / | mem is: { mem } kB |.
+
+SELECT * FROM sbook INTO TABLE hashed.
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = sizebefore.
+
+
+GET RUN TIME FIELD tb.
+
+
+READ TABLE hashed WITH KEY
+  CARRID = 'AA'
+  CONNID = '17'
+  FLDATE = '13.11.2019'
+  BOOKID = '426'
+  into row.
+
+GET RUN TIME FIELD ta.
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = sizeafter.
+tm = CONV decfloat34( ta - tb ).
+mem = sizeafter - sizebefore.
+write: / 'hashed table'.
+write: / | time is: { tm } micS |.
+write: / | mem is: { mem } kB |.
+
+SELECT * FROM sbook INTO TABLE sorted.
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = sizebefore.
+
+
+GET RUN TIME FIELD tb.
+
+READ TABLE sorted WITH KEY
+  CARRID = 'AA'
+  CONNID = '17'
+  FLDATE = '13.11.2019'
+  BOOKID = '426'
+  into row.
+
+GET RUN TIME FIELD ta.
+CALL METHOD cl_abap_memory_utilities=>get_total_used_size
+    IMPORTING
+      size = sizeafter.
+tm = CONV decfloat34( ta - tb ).
+mem = sizeafter - sizebefore.
+write: / 'sorted table'.
+write: / | time is: { tm } micS |.
+write: / | mem is: { mem } kB |.
